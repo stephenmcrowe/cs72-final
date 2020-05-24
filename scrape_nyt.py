@@ -10,7 +10,7 @@ from pprint import pprint as pp
 import sys
 
 # url definition
-url = "https://www.nytimes.com/"
+url = "https://www.nytimes.com/news-event/coronavirus"
 
 # Request
 r1 = requests.get(url)
@@ -23,7 +23,7 @@ coverpage = r1.content
 soup1 = BeautifulSoup(coverpage, 'html5lib')
 
 # News identification
-coverpage_news = soup1.find_all(class_='css-6p6lnl')
+coverpage_news = soup1.find_all('article')
 
 number_of_articles = 4
 
@@ -35,11 +35,11 @@ list_titles = []
 for n in range(0, number_of_articles):
         
     # We need to ignore "live" pages since they are not articles
-    if "live" in coverpage_news[n].find('a')['href']:  
+    if "live" in coverpage_news[n].find('h2').find('a')['href']:  
         continue
     
     # Getting the link of the article
-    link = coverpage_news[n].find('a')['href']
+    link = coverpage_news[n].find('h2').find('a')['href']
 
     link = "https://nytimes.com{}".format(link)
     list_links.append(link)
