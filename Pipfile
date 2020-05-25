@@ -9,6 +9,7 @@ verify_ssl = true
 beautifulsoup4 = "*"
 requests = "*"
 html5lib = "*"
+bert-embedding = "*"
 
 [requires]
 python_version = "3.7"
