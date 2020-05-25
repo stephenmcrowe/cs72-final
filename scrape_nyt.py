@@ -64,5 +64,6 @@ for n in range(0, number_of_articles):
         
     news_contents.append(final_article)
 
-for content in news_contents:
-  print(content, end="\n\n")
+# for content in news_contents:
+#   print(content, end="\n\n")
+print(news_contents[0])
