@@ -12,6 +12,7 @@ html5lib = "*"
 gensim = "*"
 nltk = "*"
 sklearn = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"
