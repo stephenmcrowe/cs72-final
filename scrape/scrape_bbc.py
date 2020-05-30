@@ -36,6 +36,7 @@ news_contents = []
 list_links = []
 list_titles = []
 
+import sys
 for n in range(0, number_of_articles):
         
     # We need to ignore "live" pages since they are not articles

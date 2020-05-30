@@ -1,6 +1,8 @@
 import pickle
 from gensim.models import Word2Vec
 from pprint import pprint as pp
+from nltk.corpus import stopwords
+import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 import sys
 import string
@@ -28,9 +30,18 @@ for count, sentence in enumerate(sentences):
   if (word_count >= TARGET_WORD_COUNT): break
   word_count += len(word_tokenize(sentence))
 
-word_arrays = [word_tokenize(s) for s in sentences[:count]]
+stop_words = set(stopwords.words('english') + list(string.punctuation))
+stop_words.add('”')
+stop_words.add('“')
+stop_words.add('—')
+stop_words.add('’')
 
-model = Word2Vec(word_arrays, min_count=1)
+word_arrays = [word_tokenize(s) for s in sentences[:count]]
+word_arrays_wo_stopwords = []
+for sent in word_arrays:
+  word_arrays_wo_stopwords.append([word for word in sent if not word in stop_words])
+
+model = Word2Vec(word_arrays_wo_stopwords, min_count=1)
 words = list(model.wv.vocab)
 # print("Model Vocabulary: " + str(words))
 print("Total Word Count: " + str(word_count))
