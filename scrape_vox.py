@@ -38,7 +38,7 @@ soup1 = BeautifulSoup(coverpage, 'html5lib')
 # News identification
 coverpage_news = soup1.find_all('h2', class_='c-entry-box--compact__title')
 
-number_of_articles = 5
+number_of_articles = len(coverpage_news)
 
 # Empty lists for content, links and titles
 news_contents = []
@@ -77,5 +77,10 @@ for n in range(0, number_of_articles):
 
     news_contents.append(final_article)
 
+f = open("vox_" + str(number_of_articles) + ".txt", "w")
+f2 = open("liberal_articles.txt", "a")
 for content in news_contents:
-  print(content, end="\n\n")
+  f.write(content)
+  f2.write(content)
+f.close()
+f2.close()
