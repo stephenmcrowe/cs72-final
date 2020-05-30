@@ -7,7 +7,7 @@ import string
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-TARGET_WORD_COUNT = 20000
+TARGET_WORD_COUNT = 95000
 TARGET_WORDS = ['Trump', 'Fauci', 'lockdown', 'mask', 'social-distancing', 'quarantine', 'shelter-in-place', 'stay-at-home', 'travel', 'China', 'vaccine', 'W.H.O.', 'C.D.C.', 'Pence', 'congress', 'Democrat', 'Republican']
 
 if (len(sys.argv) != 2):
@@ -17,6 +17,7 @@ if (len(sys.argv) != 2):
 source_text_file = sys.argv[1]
 f = open(source_text_file, "r")
 raw_text = f.read()
+words = raw_text.split()
 sentences = sent_tokenize(raw_text, language='english')
 f.close()
 
@@ -44,11 +45,11 @@ for word in TARGET_WORDS:
   idx = words.index(word) if word in words else None
   if (idx):
     target_word_indexes.append(words.index(word))
-    most_similar_words = model.most_similar(positive=word, topn=10)
+    most_similar_words = model.most_similar(word, topn=10)
     print(word)
     pp(most_similar_words)
 
-sys.exit(0)
+# sys.exit(0)
 
 plt.scatter(result[target_word_indexes, 0], result[target_word_indexes, 1])
 

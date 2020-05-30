@@ -25,15 +25,16 @@ soup1 = BeautifulSoup(coverpage, 'html5lib')
 # News identification
 coverpage_news = soup1.find_all('article')
 
-number_of_articles = 5
+number_of_articles = len(coverpage_news)
 
 # Empty lists for content, links and titles
 news_contents = []
 list_links = []
 list_titles = []
 
+num_scraped_articles = 0
 for n in range(0, number_of_articles):
-        
+
     # We need to ignore "live" pages since they are not articles
     if "live" in coverpage_news[n].find('h2').find('a')['href']:  
         continue
@@ -43,7 +44,7 @@ for n in range(0, number_of_articles):
 
     link = "https://nytimes.com{}".format(link)
     list_links.append(link)
-    
+
     # Getting the title
     title = coverpage_news[n].get_text()
     list_titles.append(title)
@@ -53,17 +54,26 @@ for n in range(0, number_of_articles):
     article_content = article.content
     soup_article = BeautifulSoup(article_content, 'html5lib')
     body = soup_article.find_all('section', class_='meteredContent')
-    x = body[0].find_all('p')
-    
-    # Unifying the paragraphs
-    list_paragraphs = []
-    for p in range(0, len(x)):
-        paragraph = x[p].get_text()
-        list_paragraphs.append(paragraph)
-        final_article = " ".join(list_paragraphs)
-        
-    news_contents.append(final_article)
+    if (len(body) > 0):
+        x = body[0].find_all('p')
+        # Unifying the paragraphs
+        list_paragraphs = []
+        for p in range(0, len(x)):
+            paragraph = x[p].get_text()
+            list_paragraphs.append(paragraph)
+            final_article = " ".join(list_paragraphs)
+            
+        news_contents.append(final_article)
+        num_scraped_articles += 1
 
 # for content in news_contents:
 #   print(content, end="\n\n")
-print(news_contents[0])
+# print(news_contents[0])
+
+f = open("nyt_" + str(num_scraped_articles) + ".txt", "w")
+f2 = open("liberal_articles.txt", "a")
+for content in news_contents:
+  f.write(content)
+  f2.write(content)
+f.close()
+f2.close()
