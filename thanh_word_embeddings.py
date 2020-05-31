@@ -9,7 +9,9 @@ import string
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-TARGET_WORD_COUNT = 95000
+nltk.download('stopwords')
+
+TARGET_WORD_COUNT = 730000
 TARGET_WORDS = ['Trump', 'Fauci', 'lockdown', 'mask', 'social-distancing', 'quarantine', 'shelter-in-place', 'stay-at-home', 'travel', 'China', 'vaccine', 'W.H.O.', 'C.D.C.', 'Pence', 'congress', 'Democrat', 'Republican']
 
 if (len(sys.argv) != 2):
@@ -22,6 +24,9 @@ raw_text = f.read()
 words = raw_text.split()
 sentences = sent_tokenize(raw_text, language='english')
 f.close()
+print("Read the source file!")
+print("Number of words: " + str(len(words)))
+print("Number of sentences: " + str(len(sentences)))
 
 # Cut the number of sentences such that the word count is as close to the
 # TARGET_WORD_COUNT as possible and at least as large
@@ -40,6 +45,8 @@ word_arrays = [word_tokenize(s) for s in sentences[:count]]
 word_arrays_wo_stopwords = []
 for sent in word_arrays:
   word_arrays_wo_stopwords.append([word for word in sent if not word in stop_words])
+
+print("Removed stop words!")
 
 model = Word2Vec(word_arrays_wo_stopwords, min_count=1)
 words = list(model.wv.vocab)
