@@ -13,6 +13,7 @@ gensim = "*"
 nltk = "*"
 sklearn = "*"
 matplotlib = "*"
+selenium = "*"
 
 [requires]
 python_version = "3.7"

@@ -18,7 +18,6 @@
 
 import requests
 from bs4 import BeautifulSoup
-from pprint import pprint as pp
 # import numpy as np
 # import pandas as pd
 # import time
