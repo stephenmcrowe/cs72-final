@@ -18,8 +18,6 @@
 
 import requests
 from bs4 import BeautifulSoup
-from pprint import pprint as pp
-import sys
 
 url = "https://www.democracynow.org/topics/coronavirus"
 
