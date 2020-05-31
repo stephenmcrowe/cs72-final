@@ -42,14 +42,14 @@ driver = webdriver.Chrome("chromedriver", chrome_options=options)
 driver.get(url)
 
 # Click the load more button up to number_of_pages_to_load times
-number_of_pages_to_load = 1
+number_of_pages_to_load = 20
 for i in range(number_of_pages_to_load):
   try:
     load_more_button = driver.find_elements_by_class_name("lx-stream-show-more__button")[0]
     time.sleep(1)
     load_more_button.click()
     time.sleep(1)
-    print('test')
+    print('Page: ' + str(i))
   except Exception as e:
     print(e)
     break
@@ -57,15 +57,6 @@ print("Complete")
 page_source = driver.page_source
 driver.quit()
 
-# Request
-#r1 = requests.get(url)
-#r1.status_code
-
-# We'll save in coverpage the cover page content
-# coverpage = r1.content
-
-# Soup creation
-# soup1 = BeautifulSoup(coverpage, 'html5lib')
 soup1 = BeautifulSoup(page_source, 'html5lib')
 
 # News identification
@@ -85,66 +76,73 @@ list_links = []
 list_titles = []
 
 for n in range(0, number_of_coverpage_news_articles):
+    try:
+        # We need to ignore "live" pages since they are not articles
+        if "live" in coverpage_news[n]['href']:
+            continue
 
-    # We need to ignore "live" pages since they are not articles
-    if "live" in coverpage_news[n]['href']:
+        # Getting the link of the article
+        link = coverpage_news[n]['href']
+        if (link.find("https://") == -1):
+            link = "https://www.bbc.com{}".format(link)
+        print(link)
+        list_links.append(link)
+
+        # Getting the title
+        title = coverpage_news[n].get_text()
+        list_titles.append(title)
+
+        # Reading the content (it is divided in paragraphs)
+        article = requests.get(link)
+        article_content = article.content
+        soup_article = BeautifulSoup(article_content, 'html5lib')
+        body = soup_article.find_all('div', class_='story-body')
+        if len(body) == 0: continue
+        x = body[0].find_all('p')
+
+        # Unifying the paragraphs
+        list_paragraphs = []
+        for p in range(0, len(x)):
+            paragraph = x[p].get_text()
+            list_paragraphs.append(paragraph)
+            final_article = " ".join(list_paragraphs)
+
+        news_contents.append(final_article)
+    except Exception as e:
+        print(e)
         continue
 
-    # Getting the link of the article
-    link = coverpage_news[n]['href']
-    if (link.find("https://") == -1):
-        link = "https://bbc.com{}".format(link)
-    print(link)
-    list_links.append(link)
-
-    # Getting the title
-    title = coverpage_news[n].get_text()
-    list_titles.append(title)
-
-    # Reading the content (it is divided in paragraphs)
-    article = requests.get(link)
-    article_content = article.content
-    soup_article = BeautifulSoup(article_content, 'html5lib')
-    body = soup_article.find_all('div', class_='story-body')
-    if len(body) == 0: continue
-    x = body[0].find_all('p')
-
-    # Unifying the paragraphs
-    list_paragraphs = []
-    for p in range(0, len(x)):
-        paragraph = x[p].get_text()
-        list_paragraphs.append(paragraph)
-        final_article = " ".join(list_paragraphs)
-
-    news_contents.append(final_article)
-
 for n in range(0, number_of_stream_post_news_articles):
-    # Getting the link of the article
-    link = stream_post_news[n]['href']
-    link = "https://bbc.com{}".format(link)
-    print(link)
-    list_links.append(link)
+    try:
+        # Getting the link of the article
+        link = stream_post_news[n]['href']
+        link = "https://www.bbc.com{}".format(link)
+        print(link)
+        list_links.append(link)
 
-    # Getting the title
-    title = stream_post_news[n].get_text()
-    list_titles.append(title)
+        # Getting the title
+        title = stream_post_news[n].get_text()
+        list_titles.append(title)
 
-    # Reading the content (it is divided in paragraphs)
-    article = requests.get(link)
-    article_content = article.content
-    soup_article = BeautifulSoup(article_content, 'html5lib')
-    body = soup_article.find_all('div', class_='story-body')
-    if len(body) == 0: continue
-    x = body[0].find_all('p')
+        # Reading the content (it is divided in paragraphs)
+        article = requests.get(link)
+        article_content = article.content
+        soup_article = BeautifulSoup(article_content, 'html5lib')
+        body = soup_article.find_all('div', class_='story-body')
+        if len(body) == 0: continue
+        x = body[0].find_all('p')
 
-    # Unifying the paragraphs
-    list_paragraphs = []
-    for p in range(0, len(x)):
-        paragraph = x[p].get_text()
-        list_paragraphs.append(paragraph)
-        final_article = " ".join(list_paragraphs)
+        # Unifying the paragraphs
+        list_paragraphs = []
+        for p in range(0, len(x)):
+            paragraph = x[p].get_text()
+            list_paragraphs.append(paragraph)
+            final_article = " ".join(list_paragraphs)
 
-    news_contents.append(final_article)
+        news_contents.append(final_article)
+    except Exception as e:
+        print(e)
+        continue
 
 f = open("../central/bbc_" + str(number_of_articles) + ".txt", "w")
 f2 = open("../central/central_articles.txt", "a")
