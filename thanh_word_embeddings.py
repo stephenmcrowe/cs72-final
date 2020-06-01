@@ -9,9 +9,9 @@ import string
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-nltk.download('stopwords')
+# nltk.download('stopwords')
 
-TARGET_WORD_COUNT = 730000
+TARGET_WORD_COUNT = 2500000
 TARGET_WORDS = ['Trump', 'Fauci', 'lockdown', 'mask', 'social-distancing', 'quarantine', 'shelter-in-place', 'stay-at-home', 'travel', 'China', 'vaccine', 'W.H.O.', 'C.D.C.', 'Pence', 'congress', 'Democrat', 'Republican']
 
 if (len(sys.argv) != 2):
