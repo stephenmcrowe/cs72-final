@@ -27,9 +27,9 @@ news_contents = []
 list_links = []
 list_titles = []
 
-for i in range(0, number_of_pages):
+for i in range(1, number_of_pages+1):
     # url definition
-    url = "https://thehill.com/homenews/coronavirus-report?page={}".format(i)
+    url = "https://www.breitbart.com/tag/coronavirus/page/{}".format(i)
 
     # Request
     r1 = requests.get(url)
@@ -40,9 +40,10 @@ for i in range(0, number_of_pages):
 
     # Soup creation
     soup1 = BeautifulSoup(coverpage, 'html5lib')
+    coronavirus_wrapper = soup1.find('section', class_="aList")
 
     # News identification
-    coverpage_news = soup1.find_all('h2', class_='node-title')
+    coverpage_news = coronavirus_wrapper.find_all('h2')
 
     for n in range(0, len(coverpage_news)):
             
@@ -52,7 +53,8 @@ for i in range(0, number_of_pages):
         
         # Getting the link of the article
         link = coverpage_news[n].find('a')['href']
-        link = f"https://thehill.com{link}"
+
+        link = "https://www.breitbart.com{}".format(link)
         list_links.append(link)
         
         # Getting the title
@@ -63,8 +65,8 @@ for i in range(0, number_of_pages):
         article = requests.get(link)
         article_content = article.content
         soup_article = BeautifulSoup(article_content, 'html5lib')
-        body = soup_article.find_all('div', id="content")
-        x = body[0].find_all('p') if body else []
+        body = soup_article.find_all('div', class_="entry-content")
+        x = body[0].find_all('p')
         
         # Unifying the paragraphs
         list_paragraphs = []
@@ -72,9 +74,8 @@ for i in range(0, number_of_pages):
             paragraph = x[p].get_text()
             list_paragraphs.append(paragraph)
             final_article = " ".join(list_paragraphs)
-        
-        if body:
-            news_contents.append(final_article)
+            
+        news_contents.append(final_article)
 
 for content in news_contents:
   print(content, end="\n\n")
