@@ -97,3 +97,55 @@ for i in range(num_pages_to_scrape):
     except Exception as e:
         print(e)
         continue
+
+# for i in range(0, number_of_pages):
+#     # url definition
+#     url = "https://thehill.com/homenews/coronavirus-report?page={}".format(i)
+
+#     # Request
+#     r1 = requests.get(url)
+#     r1.status_code
+
+#     # We'll save in coverpage the cover page content
+#     coverpage = r1.content
+
+#     # Soup creation
+#     soup1 = BeautifulSoup(coverpage, 'html5lib')
+
+#     # News identification
+#     coverpage_news = soup1.find_all('h2', class_='node-title')
+
+#     for n in range(0, len(coverpage_news)):
+            
+#         # We need to ignore "live" pages since they are not articles
+#         if "live" in coverpage_news[n].find('a')['href']:  
+#             continue
+        
+#         # Getting the link of the article
+#         link = coverpage_news[n].find('a')['href']
+#         link = f"https://thehill.com{link}"
+#         list_links.append(link)
+        
+#         # Getting the title
+#         title = coverpage_news[n].get_text()
+#         list_titles.append(title)
+
+#         # Reading the content (it is divided in paragraphs)
+#         article = requests.get(link)
+#         article_content = article.content
+#         soup_article = BeautifulSoup(article_content, 'html5lib')
+#         body = soup_article.find_all('div', id="content")
+#         x = body[0].find_all('p') if body else []
+        
+#         # Unifying the paragraphs
+#         list_paragraphs = []
+#         for p in range(0, len(x)):
+#             paragraph = x[p].get_text()
+#             list_paragraphs.append(paragraph)
+#             final_article = " ".join(list_paragraphs)
+        
+#         if body:
+#             news_contents.append(final_article)
+
+# for content in news_contents:
+#   print(content, end="\n\n")
