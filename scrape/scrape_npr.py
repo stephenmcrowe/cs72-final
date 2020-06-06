@@ -42,7 +42,7 @@ driver = webdriver.Chrome("chromedriver", chrome_options=options)
 driver.get(url)
 print(driver.title)
 # Click the load more button up to number_of_pages_to_load times
-number_of_pages_to_load = 20
+number_of_pages_to_load = 100
 for i in range(number_of_pages_to_load):
   try:
     load_more_button = driver.find_elements_by_class_name("options__load-more")[0]

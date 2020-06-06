@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup
 from pprint import pprint as pp
 import sys
 
-num_pages_to_scrape = 20
+num_pages_to_scrape = 100
 
 for i in range(num_pages_to_scrape):
     print("Page: " + str(i))
