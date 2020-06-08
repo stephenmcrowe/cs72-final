@@ -20,16 +20,24 @@
 import requests
 from bs4 import BeautifulSoup
 
-number_of_pages = 4
+if __debug__:
+    print("Debug active!\n")
+else:
+    print("Debug inactive!\n")
+
+number_of_pages = 100
 
 # Empty lists for content, links and titles
 news_contents = []
 list_links = []
+set_links = set()
 list_titles = []
 
 for i in range(1, number_of_pages+1):
     # url definition
     url = "https://www.nationalreview.com/tag/coronavirus/page/{}".format(i)
+    if __debug__:
+        print(f"Opening page {i} now\n")
 
     # Request
     r1 = requests.get(url)
@@ -52,27 +60,46 @@ for i in range(1, number_of_pages+1):
         
         # Getting the link of the article
         link = coverpage_news[n].find('a')['href']
+
+        # Skipping if already seen
+        if link in set_links:
+            if __debug__:
+                print("skipping...\t{}".format(link))
+            continue
+
         list_links.append(link)
+        set_links.add(link)
         
         # Getting the title
         title = coverpage_news[n].get_text()
         list_titles.append(title)
 
+        if __debug__:
+            print(link)
         # Reading the content (it is divided in paragraphs)
         article = requests.get(link)
         article_content = article.content
         soup_article = BeautifulSoup(article_content, 'html5lib')
         body = soup_article.find_all('div', class_="article-content")
-        x = body[0].find_all('p')
+        if body:
+            x = body[0].find_all('p')
         
-        # Unifying the paragraphs
-        list_paragraphs = []
-        for p in range(0, len(x)):
-            paragraph = x[p].get_text()
-            list_paragraphs.append(paragraph)
-            final_article = " ".join(list_paragraphs)
-            
-        news_contents.append(final_article)
+            # Unifying the paragraphs
+            list_paragraphs = []
+            for p in range(0, len(x)):
+                paragraph = x[p].get_text()
+                list_paragraphs.append(paragraph)
+                final_article = " ".join(list_paragraphs)
 
+            news_contents.append(final_article)
+
+# Write contents of news articles to file
+to_write = "../conservative/national_review_{}.txt".format(len(news_contents))
+if __debug__:
+    print(f"writing to file {to_write} now")
+
+f = open(to_write, "w")
 for content in news_contents:
-  print(content, end="\n\n")
+    f.write(content)
+    f.write("\n\n")
+f.close()
