@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #===============================================================================
-# Scrape New York Post News Articles
+# Scrape New York Post Coronavirus Articles
 #
 # Dartmouth College, LING48 / COSC72, Spring 2020
 # Anne Bailey, Stephen Crowe, Thanh Nguyen Jr
@@ -14,69 +14,91 @@
 # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 #
 # Usage: from terminal run `pipenv run python3 scrape_new_york_post.py`
+# Without the debugger: `pipenv run python3 -O scrape_new_york_post.py`
 #===============================================================================
 
+# imports
 import requests
 from bs4 import BeautifulSoup
-from pprint import pprint as pp
-# import numpy as np
-# import pandas as pd
-# import time
-import sys
 
-url = "https://nypost.com/news/"
+if __debug__:
+    print("Debug active!\n")
+else:
+    print("Debug inactive!\n")
 
-# Request
-r1 = requests.get(url)
-r1.status_code
-
-coverpage = r1.content
-
-# Soup creation
-soup1 = BeautifulSoup(coverpage, 'html5lib')
-
-# News identification
-coverpage_news = soup1.find_all('h3', class_='entry-heading')
-
-number_of_articles = 5
+number_of_pages = 100
 
 # Empty lists for content, links and titles
 news_contents = []
 list_links = []
+set_links = set()
 list_titles = []
 
-for n in range(0, number_of_articles):
+for i in range(1, number_of_pages+1):
+    # url definition
+    url = "https://nypost.com/coronavirus/page/{}".format(i)
 
-    # We need to ignore "live" pages since they are not articles
-    if "live" in coverpage_news[n].find('a')['href']:
-        continue
+    # Request
+    r1 = requests.get(url)
+    r1.status_code
 
-    # Getting the link of the article
-    link = coverpage_news[n].find('a')['href']
+    # We'll save in coverpage the cover page content
+    coverpage = r1.content
 
-    link = url+"{}".format(link)
-    list_links.append(link)
+    # Soup creation
+    soup1 = BeautifulSoup(coverpage, 'html5lib')
 
-    # Getting the title
-    title = coverpage_news[n].get_text()
+    # News identification
+    coverpage_news = soup1.find_all('h3', class_='entry-heading')
 
-    list_titles.append(title)
+    for n in range(0, len(coverpage_news)):
+            
+        # We need to ignore "live" pages since they are not articles
+        if "live" in coverpage_news[n].find('a')['href']:  
+            continue
+        
+        # Getting the link of the article
+        link = coverpage_news[n].find('a')['href']
 
-    # Reading the content (it is divided in paragraphs)
-    article = requests.get(link)
-    article_content = article.content
-    soup_article = BeautifulSoup(article_content, 'html5lib')
-    body = soup_article.find_all('div', class_='entry-content')
-    x = body[0].find_all('p')
+        # Skipping if already seen
+        if link in set_links:
+            if __debug__:
+                print("skipping...\t{}".format(link))
+            continue
 
-    # Unifying the paragraphs
-    list_paragraphs = []
-    for p in range(0, len(x)):
-        paragraph = x[p].get_text()
-        list_paragraphs.append(paragraph)
-        final_article = " ".join(list_paragraphs)
+        list_links.append(link)
+        set_links.add(link)
+        
+        # Getting the title
+        title = coverpage_news[n].get_text()
+        list_titles.append(title)
 
-    news_contents.append(final_article)
+        if __debug__:
+            print(link)
+        # Reading the content (it is divided in paragraphs)
+        article = requests.get(link)
+        article_content = article.content
+        soup_article = BeautifulSoup(article_content, 'html5lib')
+        body = soup_article.find_all('div', class_="entry-content")
+        if body:
+            x = body[0].find_all('p')
+        
+            # Unifying the paragraphs
+            list_paragraphs = []
+            for p in range(0, len(x)):
+                paragraph = x[p].get_text()
+                list_paragraphs.append(paragraph)
+                final_article = " ".join(list_paragraphs)
+        
+            news_contents.append(final_article)
 
+# Write contents of news articles to file
+to_write = "../conservative/new_york_post_{}.txt".format(len(news_contents))
+if __debug__:
+    print(f"writing to file {to_write} now")
+
+f = open(to_write, "w")
 for content in news_contents:
-  print(content, end="\n\n")
+    f.write(content)
+    f.write("\n\n")
+f.close()
